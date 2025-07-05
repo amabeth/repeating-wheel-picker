@@ -78,6 +78,7 @@
     "prettier": "^3.6.2",
     "react-native-builder-bob": "^0.40.12",
     "release-it": "^19.0.3",
+    "typedoc": "^0.28.7",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
@@ -126,7 +127,7 @@
   },
   "prettier": {
     "quoteProps": "consistent",
-    "singleQuote": true,
+    "singleQuote": false,
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false

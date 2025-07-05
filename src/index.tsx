@@ -1,83 +1,106 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import {
+  type LayoutChangeEvent,
   Text,
-  View,
-  VirtualizedList,
-  type ViewStyle,
   type TextStyle,
+  View,
+  type ViewStyle,
+  VirtualizedList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
-const ITEM_COUNT_MULTIPLIER = 3;
-const ITEM_DISPLAY_COUNT = 3;
-
-const DIST_TOP_TO_CENTERED = Math.floor(ITEM_DISPLAY_COUNT / 2);
 
 export default function RepeatingWheelPicker<T>(
   properties: RepeatingWheelPickerProps<T>
 ) {
-  const [props] = useState(() => withDefaults(properties));
-  const [initialIndex] = useState(
-    props.initialIndex +
-      props.data.length * Math.floor(ITEM_COUNT_MULTIPLIER / 2) -
-      DIST_TOP_TO_CENTERED
+  // TODO check input for invalid combinations
+
+  const props = useMemo(() => withDefaults(properties), [properties]);
+  const itemMultiplier = useMemo(
+    () => Math.max(Math.round(90 / props.data.length), 3),
+    [props.data.length]
+  );
+  const indexDiffTopToCentered = useMemo(
+    () => Math.floor(props.itemDisplayCount / 2),
+    [props.itemDisplayCount]
   );
 
-  const [current, setCurrent] = useState(initialIndex); // current is first one shown
+  const [initialTop] = useState(
+    () =>
+      props.initialIndex +
+      props.data.length * Math.floor(itemMultiplier / 2) -
+      indexDiffTopToCentered
+  );
+
+  const [currentTop, setCurrentTop] = useState(initialTop); // first one shown
   const listRef = useRef<VirtualizedList<T>>(null);
 
   useEffect(() => {
-    const selected =
-      props.data[(current + DIST_TOP_TO_CENTERED) % props.data.length];
+    const selectedElement =
+      props.data[(currentTop + indexDiffTopToCentered) % props.data.length]; // centered element
 
-    if (selected !== undefined) {
-      props.setSelected(selected);
+    if (selectedElement !== undefined) {
+      props.setSelected(selectedElement);
     }
-  }, [current, props]);
+  }, [currentTop, props.data]);
 
   return (
     <View
+      onLayout={props.containerOnLayout}
       style={{
         ...props.containerStyle,
         height:
-          props.itemHeight * ITEM_DISPLAY_COUNT +
+          props.itemHeight * props.itemDisplayCount +
           props.containerVerticalPadding * 2,
       }}
     >
       <VirtualizedList<T>
         ref={listRef}
-        // focusHook={useFocusEffect}
-
-        getItemCount={() => props.data.length * ITEM_COUNT_MULTIPLIER}
-        initialScrollIndex={initialIndex}
-        initialNumToRender={props.data.length * ITEM_COUNT_MULTIPLIER}
-        windowSize={props.data.length * ITEM_COUNT_MULTIPLIER}
+        scrollEnabled={props.enabled}
+        getItemCount={() => props.data.length * itemMultiplier}
+        initialScrollIndex={initialTop}
+        initialNumToRender={props.data.length * itemMultiplier}
+        windowSize={props.data.length * itemMultiplier}
         renderItem={({ item, index }) => (
           <Item item={item} props={props} key={index} />
         )}
-        getItem={(_, index) => props.data[index % props.data.length]!}
+        getItem={(_, index) =>
+          props.data[
+            Math.abs(index - indexDiffTopToCentered) % props.data.length
+          ]!
+        }
         getItemLayout={(_, index) => ({
           length: props.itemHeight,
-          offset: props.itemHeight * index,
+          offset: itemOffset(
+            index,
+            props.itemHeight,
+            indexDiffTopToCentered,
+            props.containerVerticalPadding
+          ),
           index: index,
         })}
         keyExtractor={(_, index) => `${index}`}
         // disableIntervalMomentum={true}
         decelerationRate="fast"
-        snapToOffsets={getOffsets(props)}
-        snapToAlignment="center"
+        snapToOffsets={offsets(
+          props.data.length,
+          props.itemHeight,
+          itemMultiplier,
+          indexDiffTopToCentered,
+          props.containerVerticalPadding
+        )}
+        snapToAlignment="start"
         onMomentumScrollEnd={(event) =>
           onMomentumScrollEnd(
             event.nativeEvent.contentOffset.y,
-            setCurrent,
-            props,
+            setCurrentTop,
+            props.data.length,
+            props.itemHeight,
+            itemMultiplier,
             listRef
           )
         }
         showsVerticalScrollIndicator={false}
         style={{
-          paddingVertical: props.containerVerticalPadding,
-          paddingHorizontal: props.containerHorizontalPadding,
           flex: 1,
           width: "100%",
         }}
@@ -85,7 +108,6 @@ export default function RepeatingWheelPicker<T>(
 
       <View
         style={{
-          ...props.containerStyle,
           backgroundColor: "transparent",
           position: "absolute",
           height: "100%",
@@ -130,7 +152,6 @@ function FrontGradient({ containerStyle }: { containerStyle: ViewStyle }) {
     <LinearGradient
       colors={[containerColor, "transparent", containerColor]}
       style={{
-        ...containerStyle,
         height: "100%",
         width: "100%",
         backgroundColor: "transparent",
@@ -139,38 +160,58 @@ function FrontGradient({ containerStyle }: { containerStyle: ViewStyle }) {
   );
 }
 
-function getOffsets<T>(props: RepeatingWheelPickerPropsWithDefaults<T>) {
+function offsets(
+  dataLength: number,
+  itemHeight: number,
+  itemMultiplier: number,
+  indexDiffTopToCentered: number,
+  verticalPadding: number
+) {
   let offsets = [];
 
-  for (let i = 0; i < props.data.length * ITEM_COUNT_MULTIPLIER; i++) {
-    offsets[i] = i * props.itemHeight;
+  for (let i = 0; i < dataLength * itemMultiplier; i++) {
+    offsets[i] = itemOffset(
+      i,
+      itemHeight,
+      indexDiffTopToCentered,
+      verticalPadding
+    );
   }
 
   return offsets;
 }
 
+function itemOffset(
+  index: number,
+  itemHeight: number,
+  indexDiffTopToCentered: number,
+  verticalPadding: number
+) {
+  return (index + indexDiffTopToCentered) * itemHeight - verticalPadding;
+}
+
 function onMomentumScrollEnd<T>(
   offset: number,
   setCurrent: (n: number) => void,
-  props: RepeatingWheelPickerPropsWithDefaults<T>,
+  dataLength: number,
+  itemHeight: number,
+  itemMultiplier: number,
   ref: RefObject<VirtualizedList<T> | null>
 ) {
-  const dataLength = props.data.length;
+  const currentIndex = Math.round(offset / itemHeight);
 
-  const currentIndex = Math.round(offset / props.itemHeight);
-
-  const currentSection = Math.floor(offset / (dataLength * props.itemHeight)); // zero-based
-  const targetSection = Math.floor(ITEM_COUNT_MULTIPLIER / 2);
+  const currentSection = Math.floor(offset / (dataLength * itemHeight)); // zero-based
+  const targetSection = Math.floor(itemMultiplier / 2);
 
   const targetIndex =
     currentIndex + (targetSection - currentSection) * dataLength;
-  setCurrent(targetIndex);
+  setCurrent(targetIndex - 1);
 
   if (currentSection === targetSection) {
     return;
   }
 
-  const targetOffset = offset + (targetIndex - currentIndex) * props.itemHeight;
+  const targetOffset = offset + (targetIndex - currentIndex) * itemHeight;
   ref.current?.scrollToOffset({ animated: false, offset: targetOffset });
 }
 
@@ -186,10 +227,12 @@ function withDefaults<T>(
     ...props,
 
     // optional
+    containerOnLayout: props.containerOnLayout ?? (() => {}),
     enabled: props.enabled ?? true,
 
     getLabel: props.getLabel ?? ((t: T) => `${t}`),
 
+    itemDisplayCount: props.itemDisplayCount ?? 3,
     itemHeight: props.itemHeight ?? 35,
     containerVerticalPadding: props.containerVerticalPadding ?? 15,
     containerHorizontalPadding: props.containerHorizontalPadding ?? 15,
@@ -203,6 +246,7 @@ function withDefaults<T>(
       ...props.itemContainerStyle,
       backgroundColor:
         props.itemContainerStyle?.backgroundColor ?? "transparent",
+      justifyContent: props.itemContainerStyle?.justifyContent ?? "center",
     },
     itemTextStyle: {
       ...props.itemTextStyle,
@@ -212,9 +256,8 @@ function withDefaults<T>(
   };
 }
 
-type RepeatingWheelPickerPropsWithDefaults<T> = Required<
-  RepeatingWheelPickerProps<T>
->;
+type RepeatingWheelPickerPropsWithDefaults<T> = RepeatingWheelPickerProps<T> &
+  Required<Omit<RepeatingWheelPickerProps<T>, "containerRef">>;
 
 export type RepeatingWheelPickerProps<T> = {
   setSelected: (t: T) => void;
@@ -222,9 +265,12 @@ export type RepeatingWheelPickerProps<T> = {
   initialIndex: number;
   data: T[];
 
+  containerOnLayout?: (event: LayoutChangeEvent) => void;
   enabled?: boolean;
 
+  itemDisplayCount?: number;
   itemHeight?: number;
+
   containerVerticalPadding?: number;
   containerHorizontalPadding?: number;
 
