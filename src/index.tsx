@@ -1,19 +1,15 @@
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
-import {
-  type LayoutChangeEvent,
-  Text,
-  type TextStyle,
-  View,
-  type ViewStyle,
-  VirtualizedList,
-} from "react-native";
+import { type LayoutChangeEvent, Text, type TextStyle, View, type ViewStyle, VirtualizedList } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function RepeatingWheelPicker<T>(
+/**
+ * Provides a wheel picker with repeating data that can be infinitely scrolled.
+ *
+ * @param properties configuration of the wheel picker
+ */
+export function RepeatingWheelPicker<T>(
   properties: RepeatingWheelPickerProps<T>
 ) {
-  // TODO check input for invalid combinations
-
   const props = useMemo(() => withDefaults(properties), [properties]);
   const itemMultiplier = useMemo(
     () => Math.max(Math.round(90 / props.data.length), 3),
@@ -232,6 +228,8 @@ function withDefaults<T>(
   const defaultBackgroundColor = "black";
   const defaultTextColor = "white";
 
+  validateProps(props);
+
   return {
     ...props,
 
@@ -265,25 +263,195 @@ function withDefaults<T>(
   };
 }
 
+function validateProps<T>(props: RepeatingWheelPickerProps<T>) {
+  if (props.initialIndex < 0 || props.initialIndex >= props.data.length) {
+    throw InvalidPropertiesError(
+      "initialIndex",
+      String(props.initialIndex),
+      "has to be in range [0, data.length)"
+    );
+  }
+
+  if (props.data.length < 2) {
+    throw InvalidPropertiesError(
+      "data.length",
+      String(props.data.length),
+      "has to be larger than 1"
+    );
+  }
+
+  if (props.itemDisplayCount !== undefined && props.itemDisplayCount < 1) {
+    throw InvalidPropertiesError(
+      "itemDisplayCount",
+      String(props.itemDisplayCount),
+      "has to be larger than 0"
+    );
+  }
+
+  if (props.itemHeight !== undefined && props.itemHeight > 0) {
+    throw InvalidPropertiesError(
+      "itemHeight",
+      String(props.itemHeight),
+      "has to be larger than 0"
+    );
+  }
+}
+
+function InvalidPropertiesError(
+  propertyName: string,
+  propertyValue: string,
+  violatedConstraint: string
+) {
+  return Error(
+    `Value "${propertyValue}" is invalid for property "${propertyName}": ${violatedConstraint}`
+  ) as InvalidPropertiesError;
+}
+
+interface InvalidPropertiesError extends Error {
+  name: "InvalidPropertiesError";
+}
+
 type RepeatingWheelPickerPropsWithDefaults<T> = RepeatingWheelPickerProps<T> &
   Required<Omit<RepeatingWheelPickerProps<T>, "containerRef">>;
 
+/**
+ *
+ */
 export type RepeatingWheelPickerProps<T> = {
+  /**
+   * Function to set currently selected element and use it in your application.
+   *
+   * @example
+   * ```ts
+   * const [selected, setSelected] = useState(0);
+   *
+   * return (
+   *   <RepeatingWheelPicker
+   *     setSelected={setSelected}
+   *     //...
+   *   />
+   * );
+   * ```
+   *
+   * @param t currently selected element
+   */
   setSelected: (t: T) => void;
+  /**
+   * Function to retrieve the text to display for an element as a label.
+   *
+   * @defaultValue
+   * ```ts
+   * (t: T) => `${t}`
+   * ```
+   *
+   * @param t element to retrieve label for
+   */
   getLabel?: (t: T) => string;
+  /**
+   * Index to initially center.
+   */
   initialIndex: number;
+  /**
+   * Data to display.
+   */
   data: T[];
 
+  /**
+   * Function called when the layout of the container changes.
+   *
+   * _Example usage for monitoring the container's height:_
+   * ```ts
+   * const [pickerHeight, setPickerHeight] = useState<number>(0);
+   *
+   * const onLayout = useCallback((event: LayoutChangeEvent) => {
+   *   const { height } = event.nativeEvent.layout;
+   *   setPickerHeight(height);
+   * }, []);
+   *
+   * return (
+   *   <View style={{flexDirection: "row"}}>
+   *     <View style={{height: height}}>
+   *       <Text>Picker label</Text>
+   *     </View>
+   *     <RepeatingWheelPicker
+   *       //...
+   *       containerOnLayout={onLayout}
+   *     />
+   *   </View>
+   * );
+   * ```
+   *
+   * @defaultValue () => {}
+   *
+   * @param event layout change event that triggered `onLayout`
+   */
   containerOnLayout?: (event: LayoutChangeEvent) => void;
+  /**
+   * Enables / disables scrolling of the wheel picker.
+   *
+   * @defaultValue true
+   */
   enabled?: boolean;
 
+  /**
+   * Number of items to display.
+   *
+   * @defaultValue 3
+   */
   itemDisplayCount?: number;
+  /**
+   * Height per displayed item.
+   *
+   * @defaultValue 35
+   */
   itemHeight?: number;
 
+  /**
+   * Vertical padding for the container of the wheel picker.
+   *
+   * @defaultValue 15
+   */
   containerVerticalPadding?: number;
+  /**
+   * Horizontal padding for the container of the wheel picker.
+   *
+   * @defaultValue 15
+   */
   containerHorizontalPadding?: number;
 
+  /**
+   * Styling for the container of the wheel picker.
+   *
+   * @defaultValue
+   * ```ts
+   *   {
+   *     backgroundColor: "black"
+   *   }
+   * ```
+   */
   containerStyle?: ViewStyle;
+  /**
+   * Styling for the container of each element.
+   *
+   * @defaultValue
+   * ```ts
+   *   {
+   *     backgroundColor: "transparent",
+   *     justifyContent: "center"
+   *   }
+   * ```
+   */
   itemContainerStyle?: ViewStyle;
+  /**
+   * Styling for the text of the elements.
+   *
+   * @defaultValue
+   * ```ts
+   *   {
+   *     fontSize: "18",
+   *     color: "white"
+   *   }
+   * ```
+   */
   itemTextStyle?: TextStyle;
 };
