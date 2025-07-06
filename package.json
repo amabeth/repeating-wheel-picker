@@ -55,7 +55,7 @@
   "bugs": {
     "url": "https://github.com/amabeth/repeating-wheel-picker/issues"
   },
-  "homepage": "https://github.com/amabeth/repeating-wheel-picker#readme",
+  "homepage": "https://amabeth.github.io/repeating-wheel-picker",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
