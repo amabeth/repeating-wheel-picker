@@ -1,4 +1,4 @@
-import { Text, View, type ViewStyle } from "react-native";
+import { Text, type TextStyle, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
@@ -25,18 +25,29 @@ export default function BooleanPicker() {
   }), []);
 
   return (
-    <View style={styles.tile}>
+    <View style={tileStyle}>
       <View style={rowStyle}>
-        <Text style={styles.title}>Boolean picker:</Text>
+        <Text style={titleStyle}>Boolean picker:</Text>
         <RepeatingWheelPicker<boolean> {...exampleProps} />
       </View>
     </View>
   );
 }
 
+const tileStyle: ViewStyle = {
+  ...styles.tile,
+  borderWidth: 0
+}
+
 const rowStyle: ViewStyle = {
   flexDirection: "row",
-  justifyContent: "space-between",
+  justifyContent: "flex-start",
+  alignItems: "center",
+}
+
+const titleStyle: TextStyle = {
+  ...styles.title,
+  marginRight: 20
 }
 
 const pickerContainerStyle: ViewStyle = {

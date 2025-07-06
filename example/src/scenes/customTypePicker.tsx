@@ -38,10 +38,11 @@ export default function CustomTypePicker() {
     data: data,
 
     // optional
-    getLabel: (f: FoodItem) => f.name,
+    getLabel: (f: FoodItem) => `${f.name} (${f.price}€)`,
     enabled: pickerEnabled,
-    itemDisplayCount: 4,
+    itemDisplayCount: 3,
 
+    containerVerticalPadding: 5,
     containerStyle: styles.pickerContainer,
     gradientFadeColor: Colors.tile
   }), [pickerEnabled]);

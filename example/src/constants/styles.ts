@@ -20,8 +20,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.outline,
-    elevation: 5
+    borderColor: Colors.outline
   },
   pickerContainer: {
     backgroundColor: "transparent",
