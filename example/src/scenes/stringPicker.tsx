@@ -1,9 +1,9 @@
-import { Text, View, type ViewStyle } from "react-native";
+import { Text, type TextStyle, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
 } from "repeating-wheel-picker";
-import styles from "../constants/styles";
+import styles, { Colors } from "../constants/styles";
 
 export default function StringPicker() {
   const [favoriteWord, setFavoriteWord] = useState<string>();
@@ -16,21 +16,49 @@ export default function StringPicker() {
     data: data,
 
     // optional
-    itemDisplayCount: 5
+    itemDisplayCount: 6,
+    itemHeight: 25,
+
+    containerStyle: pickerContainerStyle,
+
+    gradientFadeColor: Colors.tile
   }), []);
 
   return (
-    <View style={styles.container}>
+    <View style={tileStyle}>
       <View style={rowStyle}>
-        <Text style={styles.text}>Favorite word:</Text>
-        <Text style={styles.text}>{favoriteWord}</Text>
+        <Text style={titleStyle}>String picker:</Text>
+        <RepeatingWheelPicker<string> {...exampleProps} />
       </View>
-      <RepeatingWheelPicker<string> {...exampleProps} />
+      <Text style={selectedStyle}>Selected: {favoriteWord}</Text>
     </View>
   );
 }
 
+const tileStyle: ViewStyle = {
+  ...styles.tile,
+  paddingVertical: 0,
+  paddingBottom: 10
+}
+
 const rowStyle: ViewStyle = {
   flexDirection: "row",
-  justifyContent: "space-between",
+  alignItems: "center"
 };
+
+const titleStyle: TextStyle ={
+  ...styles.title,
+  flex: 1,
+  textAlign: "left"
+}
+
+const pickerContainerStyle: ViewStyle = {
+  ...styles.pickerContainer,
+  flex: 1
+}
+
+const selectedStyle: TextStyle ={
+  ...styles.text,
+  fontStyle: "italic",
+  textAlign: "right"
+}

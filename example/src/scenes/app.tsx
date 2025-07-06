@@ -10,9 +10,12 @@ export default function App() {
   return (
     <View style={appStyle}>
       <StringPicker/>
-      {/*<CustomTypePicker/>*/}
-      {/*<NumberPicker/>*/}
-      {/*<BooleanPicker/>*/}
+      <View style={separatorStyle}></View>
+      <CustomTypePicker/>
+      <View style={separatorStyle}></View>
+      <NumberPicker/>
+      <View style={separatorStyle}></View>
+      <BooleanPicker/>
     </View>
   )
 }
@@ -25,4 +28,6 @@ const appStyle: ViewStyle = {
   paddingBottom: 15
 }
 
-// test comment to check git settings
+const separatorStyle: ViewStyle = {
+  height: 15
+}

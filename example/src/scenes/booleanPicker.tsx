@@ -1,9 +1,9 @@
-import { Text, View } from 'react-native';
+import { Text, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
 } from "repeating-wheel-picker";
-import styles from "../constants/styles";
+import styles, { Colors } from "../constants/styles";
 
 export default function BooleanPicker() {
   const [, setSelected] = useState<boolean>();
@@ -16,15 +16,34 @@ export default function BooleanPicker() {
     data: data,
 
     // optional
+    getLabel: (b: boolean) => b ? "Yes" : "No",
     itemDisplayCount: 2,
 
-    getLabel: (b: boolean) => b ? "Yes" : "No"
+    containerVerticalPadding: 5,
+    containerHorizontalPadding: 20,
+    containerStyle: pickerContainerStyle
   }), []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Do you like this component?</Text>
-      <RepeatingWheelPicker<boolean> {...exampleProps} />
+    <View style={styles.tile}>
+      <View style={rowStyle}>
+        <Text style={styles.title}>Boolean picker:</Text>
+        <RepeatingWheelPicker<boolean> {...exampleProps} />
+      </View>
     </View>
   );
+}
+
+const rowStyle: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: "space-between",
+}
+
+const pickerContainerStyle: ViewStyle = {
+  ...styles.pickerContainer,
+
+  borderRadius: 30,
+  borderWidth: 1,
+  borderColor: "white",
+  backgroundColor: Colors.highlight
 }

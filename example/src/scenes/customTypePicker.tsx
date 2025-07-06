@@ -1,9 +1,9 @@
 import { Text, type TextStyle, TouchableOpacity, View, type ViewStyle } from "react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
 } from "repeating-wheel-picker";
-import styles, { colors } from "../constants/styles";
+import styles, { Colors } from "../constants/styles";
 
 export default function CustomTypePicker() {
   const [pickerEnabled, setPickerEnabled] = useState(false);
@@ -38,22 +38,21 @@ export default function CustomTypePicker() {
     data: data,
 
     // optional
-    itemDisplayCount: 4,
     getLabel: (f: FoodItem) => f.name,
-    enabled: pickerEnabled
+    enabled: pickerEnabled,
+    itemDisplayCount: 4,
+
+    containerStyle: styles.pickerContainer,
+    gradientFadeColor: Colors.tile
   }), [pickerEnabled]);
 
-  useEffect(() => {
-    console.log("exampleProps changed ", Date.now());
-  }, [exampleProps]);
-
   return (
-    <View style={styles.container}>
+    <View style={styles.tile}>
       <View style={rowStyle}>
-        <Text style={styles.text}>Favorite food:</Text>
+        <Text style={styles.title}>Custom type picker:</Text>
         <View style={{flex: 1}}/>
         <TouchableOpacity onPress={() => setPickerEnabled(!pickerEnabled)} style={buttonStyle}>
-          <Text style={buttonTextStyle}>{pickerEnabled ? "disable" : "enable"}</Text>
+          <Text style={styles.subtitle}>{pickerEnabled ? "disable" : "enable"}</Text>
         </TouchableOpacity>
       </View>
       <RepeatingWheelPicker {...exampleProps} />
@@ -72,13 +71,8 @@ const buttonStyle: TextStyle = {
   paddingHorizontal: 10,
   backgroundColor: "transparent",
   borderWidth: 0.7,
-  borderColor: colors.text,
+  borderColor: Colors.text,
   borderRadius: 15
-}
-
-const buttonTextStyle : TextStyle = {
-  ...styles.text,
-  fontSize: 16
 }
 
 type FoodItem = {
