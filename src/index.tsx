@@ -10,34 +10,44 @@ import { LinearGradient } from "expo-linear-gradient";
 export function RepeatingWheelPicker<T>(
   properties: RepeatingWheelPickerProps<T>
 ) {
+  // set defaults for all unprovided optional properties
   const props = useMemo(() => withDefaults(properties), [properties]);
-  const itemMultiplier = useMemo(
+  // to always have enough data to scroll through, define how often the input data should be multiplied
+  const dataMultiplier = useMemo(
     () => Math.max(Math.round(90 / props.data.length), 3),
     [props.data.length]
   );
+  // difference between centered index and top most visible index
   const indexDiffTopToCentered = useMemo(
     () => Math.floor(props.itemDisplayCount / 2),
     [props.itemDisplayCount]
   );
 
-  const [initialTop] = useState(
+  // top most visible item on first render
+  const initialTop = useMemo(
     () =>
       props.initialIndex +
-      props.data.length * Math.floor(itemMultiplier / 2) -
+      props.data.length * Math.floor(dataMultiplier / 2) -
       indexDiffTopToCentered
-  );
+  , [props.initialIndex, props.data.length, dataMultiplier, indexDiffTopToCentered]);
 
-  const [currentTop, setCurrentTop] = useState(initialTop); // first one shown
+  // current selected item (centered one)
+  const [current, setCurrent] = useState(initialTop + indexDiffTopToCentered); // first one shown
   const listRef = useRef<VirtualizedList<T>>(null);
 
+  // call "setSelected" when the current top item or the data changed
   useEffect(() => {
     const selectedElement =
-      props.data[(currentTop + indexDiffTopToCentered) % props.data.length]; // centered element
+      props.data[current % props.data.length]; // centered element
 
     if (selectedElement !== undefined) {
       props.setSelected(selectedElement);
     }
-  }, [currentTop, props.data]);
+  }, [current, props.data]);
+
+  useEffect(() => {
+    console.log("current ", current, " - ", props.data[current%props.data.length]);
+  }, [current]);
 
   return (
     <View
@@ -52,10 +62,12 @@ export function RepeatingWheelPicker<T>(
       <VirtualizedList<T>
         ref={listRef}
         scrollEnabled={props.enabled}
-        getItemCount={() => props.data.length * itemMultiplier}
+        getItemCount={() => props.data.length * dataMultiplier}
+
         initialScrollIndex={initialTop}
-        initialNumToRender={props.data.length * itemMultiplier}
-        windowSize={props.data.length * itemMultiplier}
+        initialNumToRender={props.data.length * dataMultiplier}
+        windowSize={props.data.length * dataMultiplier}
+
         renderItem={({ item, index }) => (
           <Item item={item} props={props} key={index} />
         )}
@@ -76,27 +88,30 @@ export function RepeatingWheelPicker<T>(
           index: index,
         })}
         keyExtractor={(_, index) => `${index}`}
+
         // disableIntervalMomentum={true}
         decelerationRate="fast"
         snapToOffsets={offsets(
           props.data.length,
           props.itemDisplayCount,
           props.itemHeight,
-          itemMultiplier,
+          dataMultiplier,
           indexDiffTopToCentered,
           props.containerVerticalPadding
         )}
         snapToAlignment="center"
+
         onMomentumScrollEnd={(event) =>
           onMomentumScrollEnd(
             event.nativeEvent.contentOffset.y,
-            setCurrentTop,
+            setCurrent,
             props.data.length,
             props.itemHeight,
-            itemMultiplier,
+            dataMultiplier,
             listRef
           )
         }
+
         showsVerticalScrollIndicator={false}
         style={{
           flex: 1,
@@ -125,6 +140,7 @@ function Item<T>({
   item: T;
   props: RepeatingWheelPickerPropsWithDefaults<T>;
 }) {
+
   return (
     <View
       style={{
@@ -162,13 +178,14 @@ function offsets(
   dataLength: number,
   itemDisplayCount: number,
   itemHeight: number,
-  itemMultiplier: number,
+  dataMultiplier: number,
   indexDiffTopToCentered: number,
   verticalPadding: number
 ) {
   let offsets = [];
 
-  for (let i = 0; i < dataLength * itemMultiplier; i++) {
+  // calculate offset for all items
+  for (let i = 0; i < dataLength * dataMultiplier; i++) {
     offsets[i] = itemOffset(
       i,
       itemDisplayCount,
@@ -188,6 +205,8 @@ function itemOffset(
   indexDiffTopToCentered: number,
   verticalPadding: number
 ) {
+  // if `itemDisplayCount` is an even number, centering an item will lead to one
+  // half item at the top and bottom, therefore add a half item height to the offset
   const modifierForEvenCount = itemDisplayCount % 2 === 0 ?
     itemHeight / 2 :
     0;
@@ -200,23 +219,32 @@ function onMomentumScrollEnd<T>(
   setCurrent: (n: number) => void,
   dataLength: number,
   itemHeight: number,
-  itemMultiplier: number,
+  dataMultiplier: number,
   ref: RefObject<VirtualizedList<T> | null>
 ) {
-  const currentIndex = Math.round(offset / itemHeight);
+  // get index of top most completely visible item
+  const currentIndex = Math.ceil(offset / itemHeight);
 
-  const currentSection = Math.floor(offset / (dataLength * itemHeight)); // zero-based
-  const targetSection = Math.floor(itemMultiplier / 2);
+  // get current section within whole extended data (data * dataMultiplier)
+  // section 0 = [0, data.length)
+  // section 1 = [data.length, data.length * 2)
+  // ...
+  const currentSection = Math.floor(offset / (dataLength * itemHeight));
+  // target section is always the middle one, so user can scroll seemingly infinitely
+  const targetSection = Math.floor(dataMultiplier / 2);
 
-  const targetIndex =
+  // get corresponding index of current top index in target section
+  const targetTopIndex =
     currentIndex + (targetSection - currentSection) * dataLength;
-  setCurrent(targetIndex - 1);
+  setCurrent(targetTopIndex);
 
   if (currentSection === targetSection) {
+    // if target section is current section, stay in this section
     return;
   }
 
-  const targetOffset = offset + (targetIndex - currentIndex) * itemHeight;
+  // if target section is different from current section, scroll to target
+  const targetOffset = offset + (targetTopIndex - currentIndex) * itemHeight;
   ref.current?.scrollToOffset({ animated: false, offset: targetOffset });
 }
 

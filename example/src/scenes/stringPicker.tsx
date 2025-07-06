@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
@@ -6,12 +6,12 @@ import { RepeatingWheelPicker,
 import styles from "../constants/styles";
 
 export default function StringPicker() {
-  const [, setSelected] = useState<string>();
+  const [favoriteWord, setFavoriteWord] = useState<string>();
   const data: string[] = ["art", "bus", "cache", "dart", "end", "fun", "grass", "hug"];
 
   const exampleProps = useMemo((): RepeatingWheelPickerProps<string> => ({
     // mandatory
-    setSelected: setSelected,
+    setSelected: setFavoriteWord,
     initialIndex: 7,
     data: data,
 
@@ -21,8 +21,16 @@ export default function StringPicker() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Favorite word:</Text>
+      <View style={rowStyle}>
+        <Text style={styles.text}>Favorite word:</Text>
+        <Text style={styles.text}>{favoriteWord}</Text>
+      </View>
       <RepeatingWheelPicker<string> {...exampleProps} />
     </View>
   );
 }
+
+const rowStyle: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: "space-between",
+};
