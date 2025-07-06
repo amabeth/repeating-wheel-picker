@@ -1,6 +1,6 @@
 import { Text, type TextStyle, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
-import RepeatingWheelPicker, {
+import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
 } from "repeating-wheel-picker";
 import styles from "../constants/styles";
