@@ -1,4 +1,4 @@
-# repeating-wheel-picker
+# Readme
 
 A React Native wheel picker that allows endless scrolling through repeating content
 
@@ -36,5 +36,9 @@ Contributions are currently not intended.
 ## License
 
 [MIT](LICENSE)
+
+## [Changelog](CHANGELOG.md)
+
+## [Impressum / Imprint](IMPRINT.md)
 
 ---
