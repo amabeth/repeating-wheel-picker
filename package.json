@@ -37,7 +37,8 @@
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli lib",
-    "build": "bob build & typedoc",
+    "prepare": "bob build & husky",
+    "docs": "typedoc",
     "release": "release-it --only-version"
   },
   "keywords": [
@@ -74,6 +75,7 @@
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
+    "husky": "^9.1.7",
     "jest": "^30.0.4",
     "prettier": "^3.6.2",
     "react-native-builder-bob": "^0.40.12",
