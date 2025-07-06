@@ -72,6 +72,7 @@ export default function RepeatingWheelPicker<T>(
           length: props.itemHeight,
           offset: itemOffset(
             index,
+            props.itemDisplayCount,
             props.itemHeight,
             indexDiffTopToCentered,
             props.containerVerticalPadding
@@ -83,12 +84,13 @@ export default function RepeatingWheelPicker<T>(
         decelerationRate="fast"
         snapToOffsets={offsets(
           props.data.length,
+          props.itemDisplayCount,
           props.itemHeight,
           itemMultiplier,
           indexDiffTopToCentered,
           props.containerVerticalPadding
         )}
-        snapToAlignment="start"
+        snapToAlignment="center"
         onMomentumScrollEnd={(event) =>
           onMomentumScrollEnd(
             event.nativeEvent.contentOffset.y,
@@ -162,6 +164,7 @@ function FrontGradient({ containerStyle }: { containerStyle: ViewStyle }) {
 
 function offsets(
   dataLength: number,
+  itemDisplayCount: number,
   itemHeight: number,
   itemMultiplier: number,
   indexDiffTopToCentered: number,
@@ -172,6 +175,7 @@ function offsets(
   for (let i = 0; i < dataLength * itemMultiplier; i++) {
     offsets[i] = itemOffset(
       i,
+      itemDisplayCount,
       itemHeight,
       indexDiffTopToCentered,
       verticalPadding
@@ -183,11 +187,16 @@ function offsets(
 
 function itemOffset(
   index: number,
+  itemDisplayCount: number,
   itemHeight: number,
   indexDiffTopToCentered: number,
   verticalPadding: number
 ) {
-  return (index + indexDiffTopToCentered) * itemHeight - verticalPadding;
+  const modifierForEvenCount = itemDisplayCount % 2 === 0 ?
+    itemHeight / 2 :
+    0;
+
+  return (index + indexDiffTopToCentered) * itemHeight - verticalPadding + modifierForEvenCount;
 }
 
 function onMomentumScrollEnd<T>(
