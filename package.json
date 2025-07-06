@@ -1,6 +1,6 @@
 {
   "name": "@amabeth/repeating-wheel-picker",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A React Native wheel picker that allows endless scrolling through repeating content",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
