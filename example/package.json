@@ -13,14 +13,16 @@
     "expo": "~53.0.17",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
-    "react-native": "0.79.5",
     "react-dom": "19.0.0",
-    "react-native-web": "~0.20.0"
+    "react-native": "0.79.5",
+    "react-native-web": "~0.20.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "react-native-builder-bob": "^0.40.12",
-    "react-native-monorepo-config": "^0.1.9"
+    "react-native-monorepo-config": "^0.1.9",
+    "typedoc": "^0.28.7"
   },
   "private": true
 }
