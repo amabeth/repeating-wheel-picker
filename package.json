@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace repeating-wheel-picker-example",
+    "example": "cd example & npm start",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -44,7 +44,11 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "expo",
+    "wheel",
+    "picker",
+    "wheel-picker"
   ],
   "repository": {
     "type": "git",
@@ -58,6 +62,9 @@
   "homepage": "https://amabeth.github.io/repeating-wheel-picker",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "expo-linear-gradient": "^14.1.5"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.6.0",
@@ -85,7 +92,6 @@
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "expo-linear-gradient": "^14.1.5",
     "react": "19.0.0",
     "react-native": "0.79.5"
   },
