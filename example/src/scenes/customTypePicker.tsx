@@ -2,7 +2,7 @@ import { Text, type TextStyle, TouchableOpacity, View, type ViewStyle } from "re
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
-} from "repeating-wheel-picker";
+} from "@amabeth/repeating-wheel-picker";
 import styles, { Colors } from "../constants/styles";
 
 export default function CustomTypePicker() {

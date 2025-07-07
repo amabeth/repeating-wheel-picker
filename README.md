@@ -1,6 +1,8 @@
 # Readme
 
-A React Native wheel picker that allows endless scrolling through repeating content
+A React Native wheel picker that allows endless scrolling through repeating content.
+Supports custom types for picker data.
+
 
 ## Installation
 
@@ -8,8 +10,8 @@ A React Native wheel picker that allows endless scrolling through repeating cont
 npm install repeating-wheel-picker
 ```
 
-## Usage
 
+## Usage
 
 ```tsx
 import RepeatingWheelPicker, {
@@ -33,12 +35,16 @@ return (
 
 Contributions are currently not intended.
 
+
 ## License
 
 [MIT](LICENSE)
 
+
 ## [Changelog](CHANGELOG.md)
 
+
 ## [Impressum / Imprint](https://amabeth.github.io/#imprint)
+
 
 ---
