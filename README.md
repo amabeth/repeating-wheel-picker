@@ -33,7 +33,9 @@ return (
 
 ## Example
 
-https://github.com/user-attachments/assets/137acc95-3445-4752-acba-4dfff362df4e
+![](./assets/example-string-picker.gif) ![](./assets/example-custom-type-picker.gif)
+
+![](./assets/example-number-picker.gif) ![](./assets/example-boolean-picker.gif)
 
 
 ## Contributing
