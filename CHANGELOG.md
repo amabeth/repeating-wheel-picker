@@ -11,13 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+## [1.1.0] - 2025-07-07
+
+### Added
+
 - Example gifs to README.md
 
 ### Changed
 
 - Set `expo-linear-gradient` as dependency
-
-### Removed
 
 ## [1.0.0] - 2025-07-06
 
