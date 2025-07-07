@@ -2,7 +2,7 @@ import { Text, type TextStyle, View, type ViewStyle } from "react-native";
 import { useMemo, useState } from "react";
 import { RepeatingWheelPicker,
   type RepeatingWheelPickerProps,
-} from "repeating-wheel-picker";
+} from "@amabeth/repeating-wheel-picker";
 import styles, { Colors } from "../constants/styles";
 import useComponentHeight from "../hooks/useComponentHeight";
 
