@@ -7,7 +7,7 @@ Supports custom types for picker data.
 ## Installation
 
 ```sh
-npm install repeating-wheel-picker
+npm install @amabeth/repeating-wheel-picker
 ```
 
 
@@ -16,7 +16,7 @@ npm install repeating-wheel-picker
 ```tsx
 import RepeatingWheelPicker, {
   type RepeatingWheelPickerProps,
-} from "repeating-wheel-picker";
+} from "@amabeth/repeating-wheel-picker";
 
 // ...
 const [, setSelected] = useState<string>();
