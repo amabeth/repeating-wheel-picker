@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1](https://github.com/amabeth/repeating-wheel-picker/compare/v1.2.0...v1.2.1) (2025-07-20)
+
+### Bug Fixes
+
+* example includes dependencies ([d268172](https://github.com/amabeth/repeating-wheel-picker/commit/d268172b650fbd3b75438ddab090ad55c845f28b))
+
 ## 1.2.0 (2025-07-20)
 
 ### Features
