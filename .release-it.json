@@ -13,7 +13,10 @@
     "release": true,
     "releaseName": "v${version}",
     "github.autoGenerate": true,
-    "skipChecks": true
+    "skipChecks": true,
+    "web": "https://github.com",
+    "api": "https://api.github.com",
+    "host": "github.com"
   },
   "hooks": {
     "before:init": "npm test",

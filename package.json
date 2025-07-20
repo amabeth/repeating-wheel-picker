@@ -30,7 +30,8 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "!**/node_modules"
   ],
   "scripts": {
     "example": "cd example & npm start",
