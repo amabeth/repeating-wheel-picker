@@ -6,15 +6,16 @@
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.tsx",
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "src",
     "lib",
+    "example/package.json",
+    "example/**/*.ts",
+    "example/**/*.tsx",
     "android",
     "ios",
     "cpp",
@@ -39,7 +40,7 @@
     "clean": "del-cli lib",
     "prepare": "bob build & husky",
     "docs": "typedoc",
-    "release": "release-it --only-version"
+    "release": "npx dotenv -- release-it --config .release-it.json"
   },
   "keywords": [
     "react-native",
@@ -67,7 +68,8 @@
     "expo-linear-gradient": "^14.1.5"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^19.6.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/compat": "^1.3.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.30.1",
@@ -79,6 +81,7 @@
     "@types/react": "^19.0.14",
     "commitlint": "^19.8.1",
     "del-cli": "^6.0.0",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
@@ -98,7 +101,8 @@
   "overrides": {
     "@react-native/eslint-config": {
       "eslint": "$eslint"
-    }
+    },
+    "conventional-changelog-conventionalcommits": "8.0.0"
   },
   "workspaces": [
     "example"
@@ -115,25 +119,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": {
-          "name": "angular"
-        }
-      }
-    }
   },
   "prettier": {
     "quoteProps": "consistent",

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+  "git": {
+    "commitMessage": "chore: release ${version}",
+    "tagName": "v${version}",
+    "requireCleanWorkingDir": true,
+    "requireBranch": "main"
+  },
+  "npm": {
+    "publish": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}",
+    "github.autoGenerate": true,
+    "skipChecks": true
+  },
+  "hooks": {
+    "before:init": "npm test",
+    "after:bump": "npm run prepare",
+    "after:release": "echo Successfully released ${name} v${version} to npm and GitHub!"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),\nand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).",
+      "preset": {
+        "name": "conventionalcommits"
+      },
+      "strictSemVer": true
+    }
+  }
+}
